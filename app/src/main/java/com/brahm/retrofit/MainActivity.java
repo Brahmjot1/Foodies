@@ -1,0 +1,97 @@
+package com.brahm.retrofit;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class MainActivity extends AppCompatActivity implements selectListener {
+
+    List<Meal> allUserList=new ArrayList<>();
+     RecyclerView rcvMain;
+    @SuppressLint("MissingInflatedId")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+         rcvMain=findViewById(R.id.rcvMain);
+         rcvMain.setLayoutManager(new LinearLayoutManager(this));
+
+        TextView itemTxt;
+        itemTxt =  findViewById(R.id.itemTxt);
+
+
+
+
+        RetrofitInstance.getInstance().apiInterface.getDishes().enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.isSuccessful())
+                        {
+
+                            try {
+                                JSONObject jsonObject=new JSONObject(response.body().string());
+                                JSONArray jsonArray=jsonObject.getJSONArray("meals");
+                                for(int i=0;i<jsonArray.length();i++)
+                                {
+                                    JSONObject jsonObject1= new JSONObject(String.valueOf(jsonArray.get(i)));
+                                    String description=jsonObject1.getString("strDescription");
+                                    String id=jsonObject1.getString("idIngredient");
+                                    String ingredient=jsonObject1.getString("strIngredient");
+
+                                        Meal meal=new Meal(id,description,ingredient);
+                                            allUserList.add(meal);
+                                }
+
+
+                                rcvMain.setAdapter(new userMeal(MainActivity.this,allUserList,MainActivity.this));
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t)
+                {
+                    Log.e("api","Something went wrong"+t.getLocalizedMessage());
+                }
+            });
+    }
+
+
+    @Override
+    public void onItemClicked(Meal meal)
+    {
+        Intent iNext;
+        iNext = new Intent(MainActivity.this,FoodDescription.class);
+        iNext.putExtra("DescriptionOfFood",meal.getStrDescription());
+        startActivity(iNext);
+    }
+}
