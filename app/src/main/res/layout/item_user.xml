@@ -4,26 +4,22 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-<androidx.cardview.widget.CardView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/cardView">
+    <ImageView
+        android:layout_width="81dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/food"
+        android:id="@+id/imgFood"/>
+
 
     <TextView
         android:id="@+id/itemTxt"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:textStyle="bold"
+        android:layout_height="69dp"
         android:layout_margin="10sp"
-        android:textColor="#2E91DF"
         android:text="ApiRetroFit"
-        />
-
-</androidx.cardview.widget.CardView>
-
-
-
+        android:textColor="#2E91DF"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
 
 </LinearLayout>

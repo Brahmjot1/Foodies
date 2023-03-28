@@ -25,6 +25,11 @@ public class userMeal extends RecyclerView.Adapter<userMeal.userHolder>
         this.allusersList= allusersList;
         this.listener=listener;
     }
+    public  void setfilteredList(List<Meal>filterlist)
+    {
+        this.allusersList=filterlist;
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
@@ -37,7 +42,7 @@ public class userMeal extends RecyclerView.Adapter<userMeal.userHolder>
     {
         holder.itemTxt.setText(allusersList.get(position).getStrIngredient());
 
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
+        holder.itemTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -60,7 +65,6 @@ public class userMeal extends RecyclerView.Adapter<userMeal.userHolder>
     public userHolder(@NonNull View itemView) {
         super(itemView);
         itemTxt=itemView.findViewById(R.id.itemTxt);
-        cardView=itemView.findViewById(R.id.cardView);
     }
 }
 }

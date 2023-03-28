@@ -1,6 +1,7 @@
 package com.brahm.retrofit;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,8 +18,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements selectListener {
 
     List<Meal> allUserList=new ArrayList<>();
      RecyclerView rcvMain;
+     SearchView searchView;
+     userMeal usermeal;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +43,26 @@ public class MainActivity extends AppCompatActivity implements selectListener {
         setContentView(R.layout.activity_main);
 
          rcvMain=findViewById(R.id.rcvMain);
+         searchView=findViewById(R.id.searchview);
+         searchView.clearFocus();
          rcvMain.setLayoutManager(new LinearLayoutManager(this));
 
         TextView itemTxt;
         itemTxt =  findViewById(R.id.itemTxt);
 
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                serachText(newText);
+                return true;
+            }
+        });
 
 
         RetrofitInstance.getInstance().apiInterface.getDishes().enqueue(new Callback<ResponseBody>() {
@@ -66,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements selectListener {
                                             allUserList.add(meal);
                                 }
 
-
-                                rcvMain.setAdapter(new userMeal(MainActivity.this,allUserList,MainActivity.this));
+                            usermeal=new userMeal(MainActivity.this,allUserList,MainActivity.this);
+                                rcvMain.setAdapter(usermeal);
                             } catch (JSONException e) {
                                 throw new RuntimeException(e);
                             } catch (IOException e) {
@@ -83,6 +102,18 @@ public class MainActivity extends AppCompatActivity implements selectListener {
                     Log.e("api","Something went wrong"+t.getLocalizedMessage());
                 }
             });
+    }
+
+    private void serachText(String newText) {
+        List<Meal> filterlist=new ArrayList<>();
+        for(Meal m:allUserList)
+        {
+            if(m.getStrIngredient().toLowerCase().contains(newText.toLowerCase()))
+            {
+                filterlist.add(m);
+            }
+        }
+       usermeal.setfilteredList(filterlist);
     }
 
 
